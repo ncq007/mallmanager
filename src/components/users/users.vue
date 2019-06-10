@@ -43,6 +43,15 @@
       </el-table-column>
     </el-table>
     <!-- 分页 -->
+    <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="page_num"
+      :page-sizes="[2, 4, 6, 8]"
+      :page-size="page_size"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="users_total"
+    ></el-pagination>
   </el-card>
 </template>
 
@@ -52,18 +61,29 @@ export default {
     return {
       input5: '',
       page_num: 1,
-      page_size: 5,
+      page_size: 2,
       users_total: 0,
       users_list: []
     }
   },
 
   created () {
-    this.get_tableData()
+    this.get_users_list()
   },
 
   methods: {
-    async get_tableData () {
+    handleSizeChange (val) {
+      this.page_size = val
+      this.page_num = 1
+      this.get_users_list()
+      console.log(`每页 ${val} 条`)
+    },
+    handleCurrentChange (val) {
+      this.page_num = val
+      this.get_users_list()
+      console.log(`当前页: ${val}`)
+    },
+    async get_users_list () {
       const AUTH_TOKEN = sessionStorage.getItem('token')
       this.$http.defaults.headers.common['Authorization'] = AUTH_TOKEN
       const res = await this.$http.get(
@@ -80,7 +100,7 @@ export default {
       } = res.data
       if (status === 200) {
         this.$message.success(msg)
-        this.total = total
+        this.users_total = total
         this.users_list = users
       } else {
         this.$message.warning(msg)
