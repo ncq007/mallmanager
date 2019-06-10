@@ -48,7 +48,7 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       input5: '',
       page_num: 1,
@@ -58,12 +58,12 @@ export default {
     }
   },
 
-  created() {
+  created () {
     this.get_tableData()
   },
 
   methods: {
-    async get_tableData() {
+    async get_tableData () {
       const AUTH_TOKEN = sessionStorage.getItem('token')
       this.$http.defaults.headers.common['Authorization'] = AUTH_TOKEN
       const res = await this.$http.get(
@@ -86,7 +86,7 @@ export default {
         this.$message.warning(msg)
       }
     },
-    handle_switch() {
+    handle_switch () {
       this.flag = !this.flag
       this.$message.success('设置状态成功')
     }
