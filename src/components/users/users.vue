@@ -9,8 +9,8 @@
     <!-- 搜索框 -->
     <el-row class="search">
       <el-col>
-        <el-input placeholder="请输入内容" v-model="input5" class="input-with-select">
-          <el-button slot="append" icon="el-icon-search"></el-button>
+        <el-input placeholder="请输入内容" v-model="input5" class="input-with-select" clearable @clear="handle_claer">
+          <el-button slot="append" icon="el-icon-search" @click="search_users"></el-button>
         </el-input>
         <el-button type="success" plain>添加用户</el-button>
       </el-col>
@@ -72,6 +72,12 @@ export default {
   },
 
   methods: {
+    handle_claer () {
+      this.get_users_list()
+    },
+    search_users () {
+      this.get_users_list()
+    },
     handleSizeChange (val) {
       this.page_size = val
       this.page_num = 1
