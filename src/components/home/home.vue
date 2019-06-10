@@ -7,21 +7,17 @@
             <img src="../../../static/logo.png" alt="无法加载图片">
           </div>
         </el-col>
-        <el-col :span="18">
-          <div class="grid-content bg-purple-light">
-            <h1>电商后台管理系统</h1>
-          </div>
+        <el-col :span="18" class="middle">
+          <h2>电商后台管理系统</h2>
         </el-col>
         <el-col :span="2">
-          <div class="grid-content bg-purple" id="right">
-            <a class="login_out" href="#" @click.prevent="handle_longin_out">退出</a>
-          </div>
+          <a class="login_out" href="#" @click.prevent="handle_longin_out">退出</a>
         </el-col>
       </el-row>
     </el-header>
     <el-container>
-      <el-aside class="aside" width="240px">
-        <el-menu :router="true" :unique-opened="true">
+      <el-aside class="aside" width="200px">
+        <el-menu :router="true" :unique-opened="true" class="menu">
           <!-- 1 -->
           <el-submenu index="1">
             <template slot="title">
@@ -140,7 +136,7 @@ export default {
 .main {
   background-color: #e9eef3;
 }
-h1 {
+.middle {
   text-align: center;
   line-height: 60px;
   font-size: 30px;

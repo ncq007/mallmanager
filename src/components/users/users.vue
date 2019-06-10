@@ -2,7 +2,7 @@
   <el-card class="box-card">
     <!-- 面包屑 -->
     <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item>首页</el-breadcrumb-item>
+      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>用户管理</el-breadcrumb-item>
       <el-breadcrumb-item>用户列表</el-breadcrumb-item>
     </el-breadcrumb>
@@ -16,15 +16,79 @@
       </el-col>
     </el-row>
     <!-- 表格 -->
+    <el-table :data="users_list" style="width: 100%">
+      <el-table-column type="index" label="#" width="60"></el-table-column>
+      <el-table-column prop="username" label="姓名" width="180"></el-table-column>
+      <el-table-column prop="email" label="邮箱"></el-table-column>
+      <el-table-column prop="mobile" label="电话"></el-table-column>
+      <el-table-column label="创建日期">
+        <template slot-scope="scope">{{scope.row.create_time | format_data('YYYY-MM-DD')}}</template>
+      </el-table-column>
+      <el-table-column label="用户状态">
+        <template slot-scope="scope">
+          <el-switch
+            v-model="scope.row.mg_state"
+            @change="handle_switch"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+          ></el-switch>
+        </template>
+      </el-table-column>
+      <el-table-column prop="address" label="操作">
+        <template slot-scope="scope">
+          <el-button type="primary" icon="el-icon-edit" size="mini" plain circle></el-button>
+          <el-button type="danger" icon="el-icon-delete" size="mini" plain circle></el-button>
+          <el-button type="success" icon="el-icon-check" size="mini" plain circle></el-button>
+        </template>
+      </el-table-column>
+    </el-table>
     <!-- 分页 -->
   </el-card>
 </template>
 
 <script>
 export default {
-  data () {
+  data() {
     return {
-      input5: ''
+      input5: '',
+      page_num: 1,
+      page_size: 5,
+      users_total: 0,
+      users_list: []
+    }
+  },
+
+  created() {
+    this.get_tableData()
+  },
+
+  methods: {
+    async get_tableData() {
+      const AUTH_TOKEN = sessionStorage.getItem('token')
+      this.$http.defaults.headers.common['Authorization'] = AUTH_TOKEN
+      const res = await this.$http.get(
+        `users?query=${this.input5}&pagenum=${this.page_num}&pagesize=${
+          this.page_size
+        }`
+      )
+      console.log(res)
+      // const status = res.data.meta.status
+      // const msg = res.data.meta.msg
+      const {
+        meta: { msg, status },
+        data: { total, users }
+      } = res.data
+      if (status === 200) {
+        this.$message.success(msg)
+        this.total = total
+        this.users_list = users
+      } else {
+        this.$message.warning(msg)
+      }
+    },
+    handle_switch() {
+      this.flag = !this.flag
+      this.$message.success('设置状态成功')
     }
   }
 }
