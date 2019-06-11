@@ -9,10 +9,16 @@
     <!-- 搜索框 -->
     <el-row class="search">
       <el-col>
-        <el-input placeholder="请输入内容" v-model="input5" class="input-with-select" clearable @clear="handle_claer">
+        <el-input
+          placeholder="请输入内容"
+          v-model="input5"
+          class="input-with-select"
+          clearable
+          @clear="handle_claer"
+        >
           <el-button slot="append" icon="el-icon-search" @click="search_users"></el-button>
         </el-input>
-        <el-button type="success" plain>添加用户</el-button>
+        <el-button type="success" @click="show_dialog_add_user" plain>添加用户</el-button>
       </el-col>
     </el-row>
     <!-- 表格 -->
@@ -52,44 +58,88 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="users_total"
     ></el-pagination>
+
+    <!-- 对话框  添加用户 -->
+    <el-dialog title="添加用户" :visible.sync="dialogFormVisible">
+      <el-form :model="form" label-width="100px">
+        <el-form-item label="用户名">
+          <el-input v-model="form.username" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="密码">
+          <el-input v-model="form.password" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="form.email" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电话">
+          <el-input v-model="form.mobile" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="add_user">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
 <script>
 export default {
-  data () {
+  data() {
     return {
       input5: '',
       page_num: 1,
       page_size: 2,
       users_total: 0,
-      users_list: []
+      users_list: [],
+      dialogFormVisible: false,
+      form: {}
     }
   },
 
-  created () {
+  created() {
     this.get_users_list()
   },
 
   methods: {
-    handle_claer () {
+    async add_user() {
+      const res = await this.$http.post('users', this.form)
+      console.log(res)
+      const { msg, status } = res.data.meta
+      // console.log(status)
+      // console.log(this.users_total, this.page_num, this.page_size)
+      if (status === 201) {
+        this.$message.success(msg)
+        // if (this.users_total >= this.page_num * this.page_size)
+        //   this.page_num += 1
+        this.get_users_list()
+        this.form = {}
+        this.dialogFormVisible = false
+      } else {
+        this.$message.warning(msg)
+      }
+    },
+    show_dialog_add_user() {
+      this.dialogFormVisible = true
+    },
+    handle_claer() {
       this.get_users_list()
     },
-    search_users () {
+    search_users() {
       this.get_users_list()
     },
-    handleSizeChange (val) {
+    handleSizeChange(val) {
       this.page_size = val
       this.page_num = 1
       this.get_users_list()
       console.log(`每页 ${val} 条`)
     },
-    handleCurrentChange (val) {
+    handleCurrentChange(val) {
       this.page_num = val
       this.get_users_list()
       console.log(`当前页: ${val}`)
     },
-    async get_users_list () {
+    async get_users_list() {
       const AUTH_TOKEN = sessionStorage.getItem('token')
       this.$http.defaults.headers.common['Authorization'] = AUTH_TOKEN
       const res = await this.$http.get(
@@ -97,7 +147,7 @@ export default {
           this.page_size
         }`
       )
-      console.log(res)
+      // console.log(res)
       // const status = res.data.meta.status
       // const msg = res.data.meta.msg
       const {
@@ -112,7 +162,7 @@ export default {
         this.$message.warning(msg)
       }
     },
-    handle_switch () {
+    handle_switch() {
       this.flag = !this.flag
       this.$message.success('设置状态成功')
     }
