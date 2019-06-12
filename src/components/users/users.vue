@@ -11,7 +11,7 @@
       <el-col>
         <el-input
           placeholder="请输入内容"
-          v-model="input5"
+          v-model="search_value"
           class="input-with-select"
           clearable
           @clear="handle_claer"
@@ -43,7 +43,14 @@
       <el-table-column prop="address" label="操作">
         <template slot-scope="scope">
           <el-button type="primary" icon="el-icon-edit" size="mini" plain circle></el-button>
-          <el-button type="danger" icon="el-icon-delete" size="mini" plain circle></el-button>
+          <el-button
+            @click="del_user(scope.row.id)"
+            type="danger"
+            icon="el-icon-delete"
+            size="mini"
+            plain
+            circle
+          ></el-button>
           <el-button type="success" icon="el-icon-check" size="mini" plain circle></el-button>
         </template>
       </el-table-column>
@@ -87,9 +94,9 @@
 export default {
   data() {
     return {
-      input5: '',
+      search_value: '',
       page_num: 1,
-      page_size: 2,
+      page_size: 4,
       users_total: 0,
       users_list: [],
       dialogFormVisible: false,
@@ -102,6 +109,38 @@ export default {
   },
 
   methods: {
+    // 删除用户 -- 发送请求
+    del_user(id) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+      })
+        .then(async () => {
+          const res = await this.$http.delete(`users/${id}`)
+          // console.log(res)
+          const { msg, status } = res.data.meta
+          if (status === 200) {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            // 当删除到用户后，当前页面没有用户数据时，自动跳转到前一页
+            if ((this.users_total - 1) % this.page_size === 0) {
+              this.page_num -= 1
+            }
+            this.get_users_list()
+          }
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+    },
+    // 添加用户 -- 发送请求
     async add_user() {
       const res = await this.$http.post('users', this.form)
       console.log(res)
@@ -119,31 +158,37 @@ export default {
         this.$message.warning(msg)
       }
     },
+    // 显示对话框 -- 添加用户
     show_dialog_add_user() {
       this.dialogFormVisible = true
     },
+    // 清除搜索输入框内容时，页面重新加载
     handle_claer() {
       this.get_users_list()
     },
+    // 根据搜索输入框内容，发送请求查询
     search_users() {
       this.get_users_list()
     },
+    // 切换每页显示的条数
     handleSizeChange(val) {
       this.page_size = val
       this.page_num = 1
       this.get_users_list()
       console.log(`每页 ${val} 条`)
     },
+    // 跳转到第几页
     handleCurrentChange(val) {
       this.page_num = val
       this.get_users_list()
       console.log(`当前页: ${val}`)
     },
+    // 请求用户列表数据
     async get_users_list() {
       const AUTH_TOKEN = sessionStorage.getItem('token')
       this.$http.defaults.headers.common['Authorization'] = AUTH_TOKEN
       const res = await this.$http.get(
-        `users?query=${this.input5}&pagenum=${this.page_num}&pagesize=${
+        `users?query=${this.search_value}&pagenum=${this.page_num}&pagesize=${
           this.page_size
         }`
       )
@@ -162,6 +207,7 @@ export default {
         this.$message.warning(msg)
       }
     },
+    // 设置状态
     handle_switch() {
       this.flag = !this.flag
       this.$message.success('设置状态成功')
