@@ -34,7 +34,7 @@
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.mg_state"
-            @change="handle_switch"
+            @change="handle_switch(scope.row.id, scope.row.mg_state)"
             active-color="#13ce66"
             inactive-color="#ff4949"
           ></el-switch>
@@ -266,9 +266,16 @@ export default {
       }
     },
     // 设置状态
-    handle_switch() {
-      this.flag = !this.flag
-      this.$message.success('设置状态成功')
+    async handle_switch(userId, userType) {
+      const res = await this.$http.put(`users/${userId}/state/${userType}`)
+      // console.log(res)
+      const { msg, status } = res.data.meta
+      let type = 'warning'
+      if (status === 200) {
+        // this.$message.success(msg)
+        type = 'success'
+      }
+      this.$message[type](msg)
     }
   }
 }
