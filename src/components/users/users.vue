@@ -199,17 +199,18 @@ export default {
     },
     // 添加用户 -- 发送请求
     async add_user() {
-      this.dialogFormVisible_add = false
       const res = await this.$http.post('users', this.form)
       // console.log(res)
       const { msg, status } = res.data.meta
       // console.log(status)
       // console.log(this.users_total, this.page_num, this.page_size)
       if (status === 201) {
+        this.dialogFormVisible_add = false
         this.$message.success(msg)
-        // if (this.users_total >= this.page_num * this.page_size)
-        //   this.page_num += 1
-        this.get_users_list()
+        // 添加用户后，页面自动跳转到新添加用户所在的页面。
+        const current_page = Math.ceil((this.users_total + 1) / this.page_size)
+        // console.log(`current_page=${current_page}, 总条数=${this.users_total}`)
+        this.handleCurrentChange(current_page)
         this.form = {}
       } else {
         this.$message.warning(msg)
