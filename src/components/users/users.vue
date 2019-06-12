@@ -18,7 +18,7 @@
         >
           <el-button slot="append" icon="el-icon-search" @click="search_users"></el-button>
         </el-input>
-        <el-button type="success" @click="show_dialog_add_user" plain>添加用户</el-button>
+        <el-button type="success" @click="show_add_dialog" plain>添加用户</el-button>
       </el-col>
     </el-row>
     <!-- 表格 -->
@@ -42,7 +42,14 @@
       </el-table-column>
       <el-table-column prop="address" label="操作">
         <template slot-scope="scope">
-          <el-button type="primary" icon="el-icon-edit" size="mini" plain circle></el-button>
+          <el-button
+            @click="show_edit_dialog(scope.row)"
+            type="primary"
+            icon="el-icon-edit"
+            size="mini"
+            plain
+            circle
+          ></el-button>
           <el-button
             @click="del_user(scope.row.id)"
             type="danger"
@@ -67,7 +74,7 @@
     ></el-pagination>
 
     <!-- 对话框  添加用户 -->
-    <el-dialog title="添加用户" :visible.sync="dialogFormVisible">
+    <el-dialog title="添加用户" :visible.sync="dialogFormVisible_add">
       <el-form :model="form" label-width="100px">
         <el-form-item label="用户名">
           <el-input v-model="form.username" autocomplete="off"></el-input>
@@ -83,8 +90,27 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button @click="dialogFormVisible_add = false">取 消</el-button>
         <el-button type="primary" @click="add_user">确 定</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 对话框  编辑用户 -->
+    <el-dialog title="编辑用户" :visible.sync="dialogFormVisible_edit">
+      <el-form :model="form_edit" label-width="100px">
+        <el-form-item label="用户名">
+          <el-input disabled v-model="form_edit.username" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="form_edit.email" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电话">
+          <el-input v-model="form_edit.mobile" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible_edit = false">取 消</el-button>
+        <el-button type="primary" @click="edit_user">确 定</el-button>
       </div>
     </el-dialog>
   </el-card>
@@ -96,11 +122,18 @@ export default {
     return {
       search_value: '',
       page_num: 1,
-      page_size: 4,
+      page_size: 8,
       users_total: 0,
       users_list: [],
-      dialogFormVisible: false,
-      form: {}
+      dialogFormVisible_add: false,
+      dialogFormVisible_edit: false,
+      form: {},
+      form_edit: {
+        username: '',
+        email: '',
+        mobile: '',
+        id: ''
+      }
     }
   },
 
@@ -109,6 +142,30 @@ export default {
   },
 
   methods: {
+    // 编辑用户 -- 发送请求
+    async edit_user() {
+      const res = await this.$http.put(`users/${this.form_edit.id}`, {
+        email: this.form_edit.email,
+        mobile: this.form_edit.mobile
+      })
+      // console.log(res)
+      const { msg, status } = res.data.meta
+      if (status === 200) {
+        this.$message.success(msg)
+        this.dialogFormVisible_edit = false
+        this.get_users_list()
+      }
+    },
+    // 显示对话框 -- 编辑用户
+    show_edit_dialog(user) {
+      this.dialogFormVisible_edit = true
+      if (this.form_edit.id !== user.id) {
+        this.form_edit.username = user.username
+        this.form_edit.email = user.email
+        this.form_edit.mobile = user.mobile
+        this.form_edit.id = user.id
+      }
+    },
     // 删除用户 -- 发送请求
     del_user(id) {
       this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
@@ -142,8 +199,9 @@ export default {
     },
     // 添加用户 -- 发送请求
     async add_user() {
+      this.dialogFormVisible_add = false
       const res = await this.$http.post('users', this.form)
-      console.log(res)
+      // console.log(res)
       const { msg, status } = res.data.meta
       // console.log(status)
       // console.log(this.users_total, this.page_num, this.page_size)
@@ -153,14 +211,13 @@ export default {
         //   this.page_num += 1
         this.get_users_list()
         this.form = {}
-        this.dialogFormVisible = false
       } else {
         this.$message.warning(msg)
       }
     },
     // 显示对话框 -- 添加用户
-    show_dialog_add_user() {
-      this.dialogFormVisible = true
+    show_add_dialog() {
+      this.dialogFormVisible_add = true
     },
     // 清除搜索输入框内容时，页面重新加载
     handle_claer() {
@@ -200,7 +257,7 @@ export default {
         data: { total, users }
       } = res.data
       if (status === 200) {
-        this.$message.success(msg)
+        // this.$message.success(msg)
         this.users_total = total
         this.users_list = users
       } else {
