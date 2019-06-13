@@ -167,10 +167,10 @@ export default {
       },
       form_role: {
         username: '',
-        id:'',
+        id: '',
         rid: ''
       },
-      roles_list: [],
+      roles_list: []
     }
   },
 
@@ -180,10 +180,12 @@ export default {
 
   methods: {
     // 分配角色 -- 发送请求
-    async assign_role(id,rid) {
-      const res = await this.$http.put(`users/${id}/role`, {rid})
+    async assign_role(id, rid) {
+      const res = await this.$http.put(`users/${id}/role`, { rid })
       console.log(res)
       this.dialogFormVisible_role = false
+      const { msg, status } = res.data.meta
+      if (status === 200) this.$message.success(msg)
     },
     // 显示对话框 -- 分配角色
     async show_role_dialog(user) {
