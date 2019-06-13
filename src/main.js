@@ -8,9 +8,11 @@ import App from './App'
 import router from './router'
 import http from '@/plugins/http.js'
 import moment from 'moment'
+import Mybread from '@/components/common/mybread.vue'
 
 Vue.use(ElementUI)
 Vue.use(http)
+Vue.component(Mybread.name, Mybread)
 
 Vue.config.productionTip = false
 
@@ -19,6 +21,7 @@ Vue.config.productionTip = false
 Vue.filter('format_data', (v, formatString) => {
   return moment(v).format(formatString)
 })
+
 
 /* eslint-disable no-new */
 new Vue({

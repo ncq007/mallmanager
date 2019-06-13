@@ -307,8 +307,7 @@ export default {
     },
     // 请求用户列表数据
     async get_users_list() {
-      const AUTH_TOKEN = sessionStorage.getItem('token')
-      this.$http.defaults.headers.common['Authorization'] = AUTH_TOKEN
+      
       const res = await this.$http.get(
         `users?query=${this.search_value}&pagenum=${this.page_num}&pagesize=${
           this.page_size

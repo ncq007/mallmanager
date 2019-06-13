@@ -21,13 +21,13 @@ export default new Router({
           component: () => import('@/components/users/users')
         },
         {
-          name: 'jueselist',
-          path: '/jueselist',
+          name: 'role',
+          path: '/role',
           component: () => import('@/components/quanxian/jueselist')
         },
         {
-          name: 'quanxianlist',
-          path: '/quanxianlist',
+          name: 'rights',
+          path: '/rights',
           component: () => import('@/components/quanxian/quanxianlist')
         },
         {
