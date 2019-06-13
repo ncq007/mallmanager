@@ -58,7 +58,14 @@
             plain
             circle
           ></el-button>
-          <el-button type="success" icon="el-icon-check" size="mini" plain circle></el-button>
+          <el-button
+            @click="show_role_dialog(scope.row)"
+            type="success"
+            icon="el-icon-user"
+            size="mini"
+            plain
+            circle
+          ></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -113,8 +120,31 @@
         <el-button type="primary" @click="edit_user">确 定</el-button>
       </div>
     </el-dialog>
+
+    <!-- 对话框 分配角色 -->
+    <el-dialog title="分配角色" :visible.sync="dialogFormVisible_role">
+      <el-form :model="form_role" label-width="100px">
+        <el-form-item label="用户名">{{form_role.username}}</el-form-item>
+        <el-form-item label="角色">
+          <el-select v-model="form_role.rid" placeholder="请选择">
+            <!-- <el-option label="区域一" value="shanghai"></el-option> -->
+            <el-option
+              v-for="item in roles_list"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible_role = false">取 消</el-button>
+        <el-button type="primary" @click="assign_role(form_role.id, form_role.rid)">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
+
 
 <script>
 export default {
@@ -127,13 +157,20 @@ export default {
       users_list: [],
       dialogFormVisible_add: false,
       dialogFormVisible_edit: false,
+      dialogFormVisible_role: false,
       form: {},
       form_edit: {
         username: '',
         email: '',
         mobile: '',
         id: ''
-      }
+      },
+      form_role: {
+        username: '',
+        id:'',
+        rid: ''
+      },
+      roles_list: [],
     }
   },
 
@@ -142,13 +179,38 @@ export default {
   },
 
   methods: {
+    // 分配角色 -- 发送请求
+    async assign_role(id,rid) {
+      const res = await this.$http.put(`users/${id}/role`, {rid})
+      console.log(res)
+      this.dialogFormVisible_role = false
+    },
+    // 显示对话框 -- 分配角色
+    async show_role_dialog(user) {
+      // 获取所有角色列表 -- 发送请求
+      const res = await this.$http.get('roles')
+      const res_rid = await this.$http.get(`users/${user.id}`)
+      // console.log(res)
+      // console.log(res_rid)
+      // this.form_role.id = res_rid.data.data.id
+      // this.form_role.rid = res_rid.data.data.rid
+      this.roles_list = res.data.data
+      this.form_role = res_rid.data.data
+      // console.log(this.roles_list)
+      const { msg, status } = res.data.meta
+      if (status === 200) {
+        this.dialogFormVisible_role = true
+        this.form_role.username = user.username
+      } else {
+        this.$message.warning(msg)
+      }
+    },
     // 编辑用户 -- 发送请求
     async edit_user() {
       const res = await this.$http.put(`users/${this.form_edit.id}`, {
         email: this.form_edit.email,
         mobile: this.form_edit.mobile
       })
-      // console.log(res)
       const { msg, status } = res.data.meta
       if (status === 200) {
         this.$message.success(msg)
@@ -251,8 +313,6 @@ export default {
         }`
       )
       // console.log(res)
-      // const status = res.data.meta.status
-      // const msg = res.data.meta.msg
       const {
         meta: { msg, status },
         data: { total, users }
