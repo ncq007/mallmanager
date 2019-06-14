@@ -9,7 +9,7 @@
     <!-- 使用封装的自定义组件 -->
     <my-bread lev1="权限管理" lev2="权限列表"></my-bread>
     <!-- 表格 -->
-    <el-table :data="rights_list" stripe style="width: 100%" height="430" border>
+    <el-table :data="rights_list" stripe style="width: 100%; margin-top: 20px" height="430" border>
       <el-table-column type="index" width="50"></el-table-column>
       <el-table-column prop="authName" label="权限名称" width="180"></el-table-column>
       <el-table-column prop="path" label="路径" width="180"></el-table-column>
