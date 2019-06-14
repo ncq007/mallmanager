@@ -228,6 +228,7 @@ export default {
         this.form_edit.email = user.email
         this.form_edit.mobile = user.mobile
         this.form_edit.id = user.id
+        // this.form_edit = user
       }
     },
     // 删除用户 -- 发送请求

@@ -9,17 +9,25 @@
     <el-table :data="role_list" style="width: 100%">
       <el-table-column type="expand" width="50">
         <template slot-scope="scope">
+          <span v-if="scope.row.children.length === 0">无权限</span>
           <el-row v-for="item1 in scope.row.children" :key="item1.id">
             <el-col :span="4">
-              <el-tag closable>{{item1.authName}}</el-tag>
+              <el-tag @close="handleClose(scope.row, item1)" closable>{{item1.authName}}</el-tag>
+              <i class="el-icon-caret-right"></i>
             </el-col>
             <el-col :span="20">
               <el-row v-for="item2 in item1.children" :key="item2.id">
                 <el-col :span="4">
-                  <el-tag type="success" closable>{{item2.authName}}</el-tag>
+                  <el-tag
+                    @close="handleClose(scope.row, item2)"
+                    type="success"
+                    closable
+                  >{{item2.authName}}</el-tag>
+                  <i class="el-icon-caret-right"></i>
                 </el-col>
                 <el-col :span="20">
                   <el-tag
+                    @close="handleClose(scope.row, item3)"
                     v-for="item3 in item2.children"
                     :key="item3.id"
                     type="warning"
@@ -109,6 +117,32 @@ export default {
     this.get_role_list()
   },
   methods: {
+    //关闭标签 -- 发送请求
+    async handleClose(role, tag) {
+      const res = await this.$http.delete(`roles/${role.id}/rights/${tag.id}`)
+      // console.log(res)
+      const { msg, status } = res.data.meta
+      if (status === 200) {
+        role.children = res.data.data
+        this.$message.success(msg)
+      }else {this.$message.warning("设置权限失败！！！")}
+      // 想尝试在前端处理数据。3层嵌套数组有点麻烦。
+      // for (let item1 of role) {
+      //   if (item1 === tag) {
+      //     console.log(role)
+      //     console.log(role.children)
+      //     // role.splice(role.indexOf(tag), 1)
+      //   }
+      // }
+      // for (let i = 0; i < role.length; i++) {
+      //   for (let item2 of role[i].children) {
+      //     if (item2 === tag) {
+      //       role[i].children.splice(i, 1)
+      //       role.splice(role.indexOf(role[i]), 0, role[i])
+      //     }
+      //   }
+      // }
+    },
     // 删除角色 -- 发送请求
     del_role(rid) {
       this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
@@ -135,7 +169,7 @@ export default {
     // 添加角色 -- 发送请求
     async add_role() {
       const res = await this.$http.post('roles', this.form_add)
-      console.log(res)
+      // console.log(res)
       this.dialogFormVisible_add = false
       Object.assign(this.$data.form_add, this.$options.data().form_add)
       this.get_role_list()
@@ -164,9 +198,9 @@ export default {
     },
     async get_role_list() {
       const res = await this.$http.get('roles')
-      console.log(res)
+      // console.log(res)
       this.role_list = res.data.data
-      console.log(this.role_list)
+      // console.log(this.role_list)
     }
   }
 }
