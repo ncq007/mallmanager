@@ -51,7 +51,13 @@
             circle
             plain
           ></el-button>
-          <el-button type="success" icon="el-icon-setting" circle plain></el-button>
+          <el-button
+            @click="show_tree_dialog(scope.row)"
+            type="success"
+            icon="el-icon-setting"
+            circle
+            plain
+          ></el-button>
           <el-button
             @click="del_role(scope.row.id)"
             type="danger"
@@ -93,6 +99,24 @@
         <el-button type="primary" @click="add_role">确 定</el-button>
       </div>
     </el-dialog>
+
+    <!-- 对话框 --分配权限 -->
+    <el-dialog title="分配权限" :visible.sync="dialogFormVisible_rights">
+      <el-tree
+        ref="tree"
+        :data="rights_list"
+        :default-expand-all="true"
+        show-checkbox
+        node-key="id"
+        :default-checked-keys="check_list"
+        :props="defaultProps"
+      ></el-tree>
+
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible_rights = false">取 消</el-button>
+        <el-button type="primary" @click="change_rights(current_rid)">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -101,6 +125,13 @@ export default {
   data() {
     return {
       role_list: [],
+      rights_list: [],
+      current_rid: '',
+      check_list: [],
+      defaultProps: {
+        children: 'children',
+        label: 'authName'
+      },
       form_edit: {
         roleName: '',
         roleDesc: ''
@@ -110,14 +141,56 @@ export default {
         roleDesc: ''
       },
       dialogFormVisible_edit: false,
-      dialogFormVisible_add: false
+      dialogFormVisible_add: false,
+      dialogFormVisible_rights: false
     }
   },
   created() {
     this.get_role_list()
   },
   methods: {
-    //关闭标签 -- 发送请求
+    // 分配权限 -- 发送请求
+    async change_rights(rid) {
+      this.dialogFormVisible_rights = false
+      let arr1 = this.$refs.tree.getCheckedKeys()
+      let arr2 = this.$refs.tree.getHalfCheckedKeys()
+      let arr = [...arr1,...arr2]
+      const res = await this.$http.post(`roles/${rid}/rights`, {rids:arr.join(',')})
+      console.log(res)
+      const {msg, status} = res.data.meta    
+      if (status === 200) {
+        this.$message.success(msg)
+        this.get_role_list()
+      }else (this.$message.warning(msg))
+    },
+    // 显示对话框 -- 树形分配权限
+    async show_tree_dialog(role) {
+      this.current_rid = role.id
+      console.log(role.id)
+      this.check_list = []
+      this.dialogFormVisible_rights = true
+      const res = await this.$http.get(`rights/tree`)
+      this.rights_list = res.data.data
+      const { msg, status } = res.data.meta
+      if (status === 200) {
+        // let arr_temp1 = []
+        console.log(role.children)
+        for (let item of role.children) {
+          // arr_temp1.push(item.id)
+          for (let item1 of item.children) {
+            // arr_temp1.push(item1.id)
+            for (let item2 of item1.children) {
+              this.check_list.push(item2.id)
+            }
+          }
+        }
+        // this.check_list = arr_temp1
+        console.log(this.check_list)
+      } else {
+        this.$message('获取权限失败！！！')
+      }
+    },
+    // 取消权限 -- 关闭标签 -- 发送请求
     async handleClose(role, tag) {
       const res = await this.$http.delete(`roles/${role.id}/rights/${tag.id}`)
       // console.log(res)
@@ -125,7 +198,9 @@ export default {
       if (status === 200) {
         role.children = res.data.data
         this.$message.success(msg)
-      }else {this.$message.warning("设置权限失败！！！")}
+      } else {
+        this.$message.warning('设置权限失败！！！')
+      }
       // 想尝试在前端处理数据。3层嵌套数组有点麻烦。
       // for (let item1 of role) {
       //   if (item1 === tag) {

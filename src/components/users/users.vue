@@ -307,8 +307,7 @@ export default {
       console.log(`当前页: ${val}`)
     },
     // 请求用户列表数据
-    async get_users_list() {
-      
+    async get_users_list() {      
       const res = await this.$http.get(
         `users?query=${this.search_value}&pagenum=${this.page_num}&pagesize=${
           this.page_size
