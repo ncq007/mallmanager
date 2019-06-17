@@ -21,8 +21,8 @@ export default new Router({
           component: () => import('@/components/users/users')
         },
         {
-          name: 'role',
-          path: '/role',
+          name: 'roles',
+          path: '/roles',
           component: () => import('@/components/quanxian/jueselist')
         },
         {
@@ -31,28 +31,28 @@ export default new Router({
           component: () => import('@/components/quanxian/quanxianlist')
         },
         {
-          name: 'shangpinlist',
-          path: '/shangpinlist',
+          name: 'goods',
+          path: '/goods',
           component: () => import('@/components/shangpin/shangpinlist')
         },
         {
-          name: 'fenleiargs',
-          path: '/fenleiargs',
+          name: 'params',
+          path: '/params',
           component: () => import('@/components/shangpin/fenleiargs')
         },
         {
-          name: 'shangpinfenlei',
-          path: '/shangpinfenlei',
+          name: 'categories',
+          path: '/categories',
           component: () => import('@/components/shangpin/shangpinfenlei')
         },
         {
-          name: 'dingdan',
-          path: '/dingdan',
+          name: 'orders',
+          path: '/orders',
           component: () => import('@/components/dingdan/dingdan')
         },
         {
-          name: 'data',
-          path: '/data',
+          name: 'reports',
+          path: '/reports',
           component: () => import('@/components/data/data')
         }
       ]

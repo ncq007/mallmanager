@@ -19,79 +19,15 @@
       <el-aside class="aside" width="200px">
         <el-menu :router="true" :unique-opened="true" class="menu">
           <!-- 1 -->
-          <el-submenu index="1">
+          <el-submenu :index="''+(index+1)" v-for="(item, index) in menus" :key="item.id">
             <template slot="title">
               <i class="el-icon-location"></i>
-              <span>用户管理</span>
+              <span>{{item.authName}}</span>
             </template>
             <el-menu-item-group>
-              <el-menu-item index="users">
+              <el-menu-item :index="item1.path" v-for="item1 in item.children" :key="item1.id">
                 <i class="el-icon-menu"></i>
-                <span slot="title">用户列表</span>
-              </el-menu-item>
-            </el-menu-item-group>
-          </el-submenu>
-          <!-- 2 -->
-          <el-submenu index="2">
-            <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>权限管理</span>
-            </template>
-            <el-menu-item-group>
-              <el-menu-item index="role">
-                <i class="el-icon-menu"></i>
-                <span slot="title">角色列表</span>
-              </el-menu-item>
-              <el-menu-item index="rights">
-                <i class="el-icon-menu"></i>
-                <span slot="title">权限列表</span>
-              </el-menu-item>
-            </el-menu-item-group>
-          </el-submenu>
-          <!-- 3 -->
-          <el-submenu index="3">
-            <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>商品管理</span>
-            </template>
-            <el-menu-item-group>
-              <el-menu-item index="shangpinlist">
-                <i class="el-icon-menu"></i>
-                <span slot="title">商品列表</span>
-              </el-menu-item>
-              <el-menu-item index="fenleiargs">
-                <i class="el-icon-menu"></i>
-                <span slot="title">分类参数</span>
-              </el-menu-item>
-              <el-menu-item index="shangpinfenlei">
-                <i class="el-icon-menu"></i>
-                <span slot="title">商品分类</span>
-              </el-menu-item>
-            </el-menu-item-group>
-          </el-submenu>
-          <!-- 4 -->
-          <el-submenu index="4">
-            <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>订单管理</span>
-            </template>
-            <el-menu-item-group>
-              <el-menu-item index="dingdan">
-                <i class="el-icon-menu"></i>
-                <span slot="title">订单列表</span>
-              </el-menu-item>
-            </el-menu-item-group>
-          </el-submenu>
-          <!-- 5 -->
-          <el-submenu index="5">
-            <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>数据管理</span>
-            </template>
-            <el-menu-item-group>
-              <el-menu-item index="data">
-                <i class="el-icon-menu"></i>
-                <span slot="title">数据报表</span>
+                <span slot="title">{{item1.authName}}</span>
               </el-menu-item>
             </el-menu-item-group>
           </el-submenu>
@@ -106,15 +42,30 @@
 
 <script>
 export default {
-  beforeCreate () {
+  data() {
+    return {
+      menus: []
+    }
+  },
+  beforeCreate() {
     const token = sessionStorage.getItem('token')
     if (!token) {
       this.$message.warning('请先登录！')
       this.$router.push({ name: 'login' })
     }
   },
+  created() {
+    this.get_menus()
+  },
   methods: {
-    handle_longin_out () {
+    // 获取导航菜单 -- 发送请求
+    async get_menus () {
+      const res = await this.$http.get('menus')
+      console.log(res)
+      this.menus = res.data.data
+    },
+    // 退出登录
+    handle_longin_out() {
       sessionStorage.clear()
       this.$message.warning('恭喜你, 退出成功。。。')
       this.$router.push({ name: 'login' })
