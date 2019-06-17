@@ -7,8 +7,11 @@
             <img src="../../../static/logo.png" alt="无法加载图片">
           </div>
         </el-col>
-        <el-col :span="18" class="middle">
+        <el-col :span="14" class="middle">
           <h2>电商后台管理系统</h2>
+        </el-col>
+        <el-col :span="4" class="middle">
+          <span style="font-size:20px;color:black;">用户名：{{username}}</span>
         </el-col>
         <el-col :span="2">
           <a class="login_out" href="#" @click.prevent="handle_longin_out">退出</a>
@@ -44,7 +47,8 @@
 export default {
   data() {
     return {
-      menus: []
+      menus: [],
+      username:''
     }
   },
   beforeCreate() {
@@ -63,6 +67,8 @@ export default {
       const res = await this.$http.get('menus')
       console.log(res)
       this.menus = res.data.data
+      this.username = JSON.parse(sessionStorage.getItem('username'))
+      console.log(this.username)
     },
     // 退出登录
     handle_longin_out() {

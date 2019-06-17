@@ -15,7 +15,7 @@
 
 <script>
 export default {
-  data () {
+  data() {
     return {
       formData: {
         username: '',
@@ -24,7 +24,7 @@ export default {
     }
   },
   methods: {
-    async handleLogin () {
+    async handleLogin() {
       const res = await this.$http.post('login', this.formData)
       console.log(res)
       const {
@@ -36,6 +36,8 @@ export default {
         const token = data.token
         console.log(token)
         sessionStorage.setItem('token', token)
+        const username = this.formData.username
+        sessionStorage.setItem('username', JSON.stringify(username))
         this.$message.success(msg)
         this.$router.push({ name: 'home' })
       } else {
