@@ -156,7 +156,7 @@ export default {
       let arr2 = this.$refs.tree.getHalfCheckedKeys()
       let arr = [...arr1,...arr2]
       const res = await this.$http.post(`roles/${rid}/rights`, {rids:arr.join(',')})
-      console.log(res)
+      // console.log(res)
       const {msg, status} = res.data.meta    
       if (status === 200) {
         this.$message.success(msg)
@@ -166,7 +166,7 @@ export default {
     // 显示对话框 -- 树形分配权限
     async show_tree_dialog(role) {
       this.current_rid = role.id
-      console.log(role.id)
+      // console.log(role.id)
       this.check_list = []
       this.dialogFormVisible_rights = true
       const res = await this.$http.get(`rights/tree`)
@@ -174,7 +174,7 @@ export default {
       const { msg, status } = res.data.meta
       if (status === 200) {
         // let arr_temp1 = []
-        console.log(role.children)
+        // console.log(role.children)
         for (let item of role.children) {
           // arr_temp1.push(item.id)
           for (let item1 of item.children) {
@@ -185,7 +185,7 @@ export default {
           }
         }
         // this.check_list = arr_temp1
-        console.log(this.check_list)
+        // console.log(this.check_list)
       } else {
         this.$message('获取权限失败！！！')
       }

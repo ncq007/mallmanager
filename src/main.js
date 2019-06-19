@@ -21,8 +21,6 @@ Vue.config.productionTip = false
 Vue.filter('format_data', (v, formatString) => {
   return moment(v).format(formatString)
 })
-
-
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

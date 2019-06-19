@@ -55,6 +55,11 @@ const router = new Router({
           name: 'reports',
           path: '/reports',
           component: () => import('@/components/data/data')
+        },
+        {
+          name: 'addgoods',
+          path: '/addgoods',
+          component: () => import('@/components/shangpin/addgoods')
         }
       ]
     }
@@ -62,7 +67,7 @@ const router = new Router({
 })
 
 router.beforeEach((to, from, next) => {
-  console.log(to)
+  // console.log(to)
   if (to.path === '/login') next()
   else {
     const token = sessionStorage.getItem('token')

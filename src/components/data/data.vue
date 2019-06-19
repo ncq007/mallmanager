@@ -1,7 +1,5 @@
 <template>
-  <div>
-    数据管理
-  </div>
+  <el-card class="box-card">数据管理</el-card>
 </template>
 
 <script>

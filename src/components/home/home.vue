@@ -65,10 +65,10 @@ export default {
     // 获取导航菜单 -- 发送请求
     async get_menus () {
       const res = await this.$http.get('menus')
-      console.log(res)
+      // console.log(res)
       this.menus = res.data.data
       this.username = JSON.parse(sessionStorage.getItem('username'))
-      console.log(this.username)
+      // console.log(this.username)
     },
     // 退出登录
     handle_longin_out() {
