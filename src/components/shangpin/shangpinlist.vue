@@ -136,9 +136,13 @@ export default {
       this.$router.push({ name: 'addgoods' })
     },
     // 清空搜素框 - 页面重新加载
-    handle_claer() {},
+    handle_claer() {
+      this.get_goods_list()
+    },
     // 搜索商品
-    search_goods() {},
+    search_goods() {
+      this.get_goods_list()
+    },
     // 删除商品 -- 发送请求
     del_goods(id) {
       this.$confirm('此操作将永久删除该商品, 是否继续?', '提示', {

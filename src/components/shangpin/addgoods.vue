@@ -145,9 +145,9 @@ export default {
         return {attr_id: item2.attr_id, attr_value: item2.attr_vals}
       })
       this.form_data.attrs = [...arr1, ...arr2]
-      console.log(this.form_data)
+      console.log(arr1)
       const res = await this.$http.post('goods', this.form_data)
-      console.log(res)
+      // console.log(res)
       this.$router.push({name:'goods'})
       this.get_goods_cate()
     },
