@@ -30,9 +30,9 @@
               >{{tag}}</el-tag>
               <el-input
                 class="input-new-tag"
-                v-if="inputVisible"
-                v-model="inputValue"
-                ref="saveTagInput"
+                v-if="scope.row.inputVisible"
+                v-model="scope.row.inputValue"
+                :ref="scope.row.attr_id"
                 size="small"
                 @keyup.enter.native="handleInputConfirm(scope.row)"
                 @blur="handleInputConfirm(scope.row)"
@@ -41,7 +41,7 @@
                 v-else
                 class="button-new-tag"
                 size="small"
-                @click="showInput(scope.row.attr_id)"
+                @click="showInput(scope.row)"
               >+ 新增标签</el-button>
             </template>
           </el-table-column>
@@ -103,8 +103,7 @@ export default {
       activeName: '1',
       tableData_dt: [],
       tableData_jt: [],
-      inputVisible: false,
-      inputValue: '',
+      // inputVisible: false,
       arr_ref: [],
       dialogFormVisible_dt_args: false,
       form_dt_args: {
@@ -140,7 +139,7 @@ export default {
       }
     },
     // 删除动态参数， 发送请求
-    del_dt_args(obj) {
+    del_dt_args(row) {
       this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -148,7 +147,7 @@ export default {
       })
         .then(async () => {
           const res = await this.$http.delete(
-            `categories/${obj.cat_id}/attributes/${obj.attr_id}`
+            `categories/${row.cat_id}/attributes/${row.attr_id}`
           )
           const { msg, status } = res.data.meta
           if (status === 200) {
@@ -173,13 +172,13 @@ export default {
       this.dialogFormVisible_dt_args = true
     },
     // 展开列表相关：
-    async handleClose(obj, index) {
-      console.log(obj)
-      obj.arr_attr_vals.splice(index, 1)
-      obj.attr_vals = obj.arr_attr_vals.join(',')
+    async handleClose(row, index) {
+      console.log(row)
+      row.arr_attr_vals.splice(index, 1)
+      row.attr_vals = row.arr_attr_vals.join(',')
       const res = await this.$http.put(
-        `categories/${obj.cat_id}/attributes/${obj.attr_id}`,
-        obj
+        `categories/${row.cat_id}/attributes/${row.attr_id}`,
+        row
       )
       // console.log(res)
       const { msg, status } = res.data.meta
@@ -190,26 +189,32 @@ export default {
       }
     },
 
-    showInput(ref) {
-      this.inputVisible = true
+    showInput(row) {
+      row.inputVisible = true
       this.$nextTick(_ => {
-        this.$refs.saveTagInput.$refs.input.focus()
+        this.$refs[row.attr_id].$refs.input.focus()
       })
     },
 
-    async handleInputConfirm(obj) {
-      let inputValue = this.inputValue.trim()
-      if (inputValue) {
-        obj.arr_attr_vals.push(inputValue)
-        obj.attr_vals = obj.arr_attr_vals.join(',')
+    async handleInputConfirm(row) {
+      let inputValue = row.inputValue.trim()
+      if (inputValue && row.arr_attr_vals.indexOf(inputValue) === -1) {
+        row.arr_attr_vals.push(inputValue)
+        row.attr_vals = row.arr_attr_vals.join(',')
+      } else if (!inputValue) {
+        this.$message.warning('输入不能为空，请重新输入！！！')
+        return
+      } else if (row.arr_attr_vals.indexOf(inputValue) !== -1) {
+        this.$message.warning('已存在的参数，请重新输入！！！')
+        return
       } else {
         return
       }
-      this.inputVisible = false
-      this.inputValue = ''
+      row.inputVisible = false
+      row.inputValue = ''
       const res = await this.$http.put(
-        `categories/${obj.cat_id}/attributes/${obj.attr_id}`,
-        obj
+        `categories/${row.cat_id}/attributes/${row.attr_id}`,
+        row
       )
       console.log(res)
       const { msg, status } = res.data.meta
@@ -227,10 +232,12 @@ export default {
         params: { sel: 'many' }
       })
       this.tableData_dt = res_dt.data.data
-      // console.log(this.tableData_dt)
+      console.log(this.tableData_dt)
       this.tableData_dt.forEach(item => {
         let arr = item.attr_vals.split(',')
         this.$set(item, 'arr_attr_vals', arr)
+        this.$set(item, 'inputValue', '')
+        this.$set(item, 'inputVisible', false)
       })
     },
     // 获取静态参数列表数据：
