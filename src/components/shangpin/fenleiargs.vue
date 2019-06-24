@@ -201,9 +201,6 @@ export default {
       if (inputValue && row.arr_attr_vals.indexOf(inputValue) === -1) {
         row.arr_attr_vals.push(inputValue)
         row.attr_vals = row.arr_attr_vals.join(',')
-      } else if (!inputValue) {
-        this.$message.warning('输入不能为空，请重新输入！！！')
-        return
       } else if (row.arr_attr_vals.indexOf(inputValue) !== -1) {
         this.$message.warning('已存在的参数，请重新输入！！！')
         return
