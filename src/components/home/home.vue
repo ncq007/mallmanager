@@ -25,7 +25,7 @@
           <el-submenu :index="''+(index+1)" v-for="(item, index) in menus" :key="item.id">
             <template slot="title">
               <i class="el-icon-location"></i>
-              <span>{{item.authName}}</span>
+              <span>{{item.authName+ '(' + index + ')'}}</span>
             </template>
             <el-menu-item-group>
               <el-menu-item :index="item1.path" v-for="item1 in item.children" :key="item1.id">
@@ -47,6 +47,7 @@
 export default {
   data() {
     return {
+      num: 12,
       menus: [],
       username:''
     }

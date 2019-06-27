@@ -215,6 +215,7 @@ export default {
 
       this.form_edit.goods_id = goods_id
     },
+    // 每页显示几条
     handleSizeChange(val) {
       this.page_size = val
       this.page_num = 1
