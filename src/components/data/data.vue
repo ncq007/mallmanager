@@ -6,7 +6,7 @@
     ></my-bread>
     <div
       id="main"
-      style="width: 600px;height: 400px;"
+      style="width: 600px;height: 400px;margin-top: 10px;"
     ></div>
   </el-card>
 </template>
@@ -26,6 +26,7 @@ export default {
     async useEchart () {
       let myChart = echarts.init(document.getElementById('main'))
       const res = await this.$http.get('reports/type/1')
+      console.log(res)
       let option1 = {
         title: {
           text: '堆叠区域图'
