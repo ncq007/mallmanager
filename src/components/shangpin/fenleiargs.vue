@@ -5,7 +5,6 @@
     <el-alert title="注意:只允许为第三级分类设置参数" class="alert" type="warning" show-icon></el-alert>
     <el-form>
       <el-form-item label="请选择商品分类">
-        {{value}}
         <el-cascader
           :show-all-levels="false"
           v-model="value"

@@ -3,8 +3,8 @@
     <el-header class="header">
       <el-row>
         <el-col :span="4">
-          <div class="grid-content bg-purple">
-            <img src="../../../static/logo.png" alt="无法加载图片">
+          <div class="grid-content bg-purple" style="visibility:hidden;">
+            <img src="../../../static/logo.png" alt="无法加载图片" />
           </div>
         </el-col>
         <el-col :span="14" class="middle">
@@ -25,7 +25,7 @@
           <el-submenu :index="''+(index+1)" v-for="(item, index) in menus" :key="item.id">
             <template slot="title">
               <i class="el-icon-location"></i>
-              <span>{{item.authName+ '(' + index + ')'}}</span>
+              <span>{{item.authName}}</span>
             </template>
             <el-menu-item-group>
               <el-menu-item :index="item1.path" v-for="item1 in item.children" :key="item1.id">
@@ -45,21 +45,21 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       num: 12,
       menus: [],
-      username:''
+      username: ''
     }
   },
-  beforeCreate() {
+  beforeCreate () {
     const token = sessionStorage.getItem('token')
     if (!token) {
       this.$message.warning('请先登录！')
       this.$router.push({ name: 'login' })
     }
   },
-  created() {
+  created () {
     this.get_menus()
   },
   methods: {
@@ -72,7 +72,7 @@ export default {
       // console.log(this.username)
     },
     // 退出登录
-    handle_longin_out() {
+    handle_longin_out () {
       sessionStorage.clear()
       this.$message.warning('恭喜你, 退出成功。。。')
       this.$router.push({ name: 'login' })

@@ -68,9 +68,9 @@
 </template>
 
 <script>
-import orders_list from '@/components/dingdan/city_data2017_element.js'
+import ordersList from '@/components/dingdan/city_data2017_element.js'
 export default {
-  data() {
+  data () {
     return {
       tableData: [],
       page_num: 1,
@@ -82,25 +82,25 @@ export default {
       value: []
     }
   },
-  created() {
+  created () {
     this.get_orders_list()
   },
   methods: {
     // 切换省市触发的方法
-    handleChange() {
+    handleChange () {
 
     },
     // 发送请求  -- 修改订单地址
-    async edit_orders() {
+    async edit_orders () {
       this.form_edit = {}
     },
     // 显示对话框 -- 修改订单地址
-    show_dialog_edit() {
-      this.orders_list = orders_list
+    show_dialog_edit () {
+      this.orders_list = ordersList
       this.dialogFormVisible_edit = true
     },
     // 请求接口，得到订单列表
-    async get_orders_list() {
+    async get_orders_list () {
       const res = await this.$http({
         url: '/orders',
         type: 'get',
@@ -128,14 +128,14 @@ export default {
       }
     },
     // 每页显示几条
-    handleSizeChange(val) {
+    handleSizeChange (val) {
       this.page_size = val
       this.page_num = 1
       this.get_orders_list()
       console.log(`每页 ${val} 条`)
     },
     // 跳转到第几页
-    handleCurrentChange(val) {
+    handleCurrentChange (val) {
       this.page_num = val
       this.get_orders_list()
       console.log(`当前页: ${val}`)

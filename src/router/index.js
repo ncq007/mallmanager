@@ -5,6 +5,7 @@ import { Message } from 'element-ui'
 Vue.use(Router)
 
 const router = new Router({
+  mode: "history",
   routes: [
     {
       name: 'login',
